@@ -1,24 +1,36 @@
-### Engie Challenge Quick Guide
+### powerplant Challenge Quick Guide
 
-At first we build the docker image: 
+You can access the code challenge downloading the repository at:
 
 ```
-docker build -t engie-image .
+git clone git@github.com:vancasti/powerplant-coding-challenge.git
+```
+
+At first we must build the docker image: 
+
+```
+docker build -t powerplant-image .
 ```
 
 The second step is to run the docker container: 
 
 ```
-docker run -d --name engie-container -p 8888:8888 engie-image
+docker run -d --name powerplant-container -p 8888:8888 powerplant-image
 ```
 
-We have to check that fast api is running and listening in the 8888 port:
+We have to check that Fast AOI is running and listening in the 8888 port:
 
 ```
 INFO:     Uvicorn running on http://0.0.0.0:8888 (Press CTRL+C to quit)
 ```
 
-We can use any API client (f.e. Postman or with Curl directly) to make an API call to generateplan endpoint:
+You can check the docs API to see an example payload: 
+
+```
+http://localhost:8888/docs
+```
+
+We can use any API client (f.e. Postman or CURL) to make an API call to /generateplan:
 
 ```
 curl --location 'http://localhost:8888/productionplan' \
