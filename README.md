@@ -1,12 +1,12 @@
-### powerplant Challenge Quick Guide
+### Powerplant Challenge Quick Guide
 
-You can access the code challenge downloading the repository at:
+You can access the code challenge downloading the repository:
 
 ```
 git clone git@github.com:vancasti/powerplant-coding-challenge.git
 ```
 
-At first we must build the docker image: 
+This project was bild using docker, so you have to create the image: 
 
 ```
 docker build -t powerplant-image .
@@ -18,7 +18,7 @@ The second step is to run the docker container:
 docker run -d --name powerplant-container -p 8888:8888 powerplant-image
 ```
 
-We have to check that Fast AOI is running and listening in the 8888 port:
+We have to check that Fast API is running and listening in the 8888 port:
 
 ```
 INFO:     Uvicorn running on http://0.0.0.0:8888 (Press CTRL+C to quit)
