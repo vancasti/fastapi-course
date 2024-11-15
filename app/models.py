@@ -1,22 +1,16 @@
 from pydantic import BaseModel, Field
-from typing import List
-
-class Fuels(BaseModel):
-    gas: float = Field(..., alias="gas(euro/MWh)")
-    kerosine: float = Field(..., alias="kerosine(euro/MWh)")
-    co2: float = Field(..., alias="co2(euro/ton)")
-    wind: float = Field(..., alias="wind(%)")
+from typing import List, Optional
 
 
-class PowerPlant(BaseModel):
-    name: str
-    type: str
-    efficiency: float
-    pmin: int
-    pmax: int
+class Movie(BaseModel):
+    id: Optional[int] = None
+    title: str
+    overview: str = Field(min_length=3)
+    year: int
+    rating: float
+    category: str
 
 
-class PowerPlantData(BaseModel):
-    load: float
-    fuels: Fuels
-    powerplants: List[PowerPlant]
+class User(BaseModel):
+    email: str
+    password: str
