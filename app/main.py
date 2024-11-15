@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
-from .models import Movie, User
+
+from .models import Movie, User, BearerJWT
 from .jwt import create_token
 
 
@@ -29,12 +30,11 @@ def root():
 
 @app.post("/login", tags=["auth"])
 def login(user: User):
-    token : str = create_token(user.dict())
-    print(token)
-    return user
+    token: str = create_token(user.dict())
+    return JSONResponse(content=token)
 
 
-@app.get("/movies", tags=["movies"])
+@app.get("/movies", tags=["movies"], dependencies=[Depends(BearerJWT())])
 def get_movies():
     return JSONResponse(content=movies)
 

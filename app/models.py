@@ -1,6 +1,12 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
+from fastapi.security import HTTPBearer
+
+
+class BearerJWT(HTTPBearer):
+    ...
+
 
 class Movie(BaseModel):
     id: Optional[int] = None
