@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Body, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from .models import Movie, User, BearerJWT
+from .models import Movie, MovieSchema, UserSchema, BearerJWT, MovieCreate
 from .jwt import create_token
+from db.database import Session, engine, Base
 
 
 app = FastAPI(
@@ -10,6 +11,8 @@ app = FastAPI(
     description="Building an API with FastAPI",
     version="1.0.0",
 )
+
+Base.metadata.create_all(bind=engine)
 
 movies = [
     {
@@ -29,7 +32,7 @@ def root():
 
 
 @app.post("/login", tags=["auth"])
-def login(user: User):
+def login(user: UserSchema):
     token: str = create_token(user.dict())
     return JSONResponse(content=token)
 
@@ -39,7 +42,7 @@ def get_movies():
     return JSONResponse(content=movies)
 
 
-@app.get("/movies/{id}", tags=["movies"])
+@app.get("/movies/{id}", tags=["movies"], response_model=MovieSchema)
 def get_movie(id: int):
     # by interate on list
     for movie in movies:
@@ -55,25 +58,34 @@ def get_movies_by_category(category: str):
     return [movie for movie in movies if movie.get("category") == category]
 
 
-@app.post("/movies", tags=["movies"])
-def create_movie(movie: Movie):
-    print(Body)
-    movies.append(movie)
+@app.post("/movies", tags=["movies"], response_model=MovieSchema)
+def create_movie(movie: MovieCreate):
+    db = Session()
+    new_movie = Movie(
+        title=movie.title,
+        overview=movie.overview,
+        year=movie.year,
+        rating=movie.rating,
+        category=movie.category,
+    )
+    db.add(new_movie)
+    db.commit()
+    db.refresh(new_movie)
     return JSONResponse(
         status_code=201, content={"message": "Successfully added a new film"}
     )
 
 
-@app.put("/movies/{id}", tags=["movies"])
-def update_movie(id: int, movie: Movie):
-    for movie in movies:
-        if movie.get("id") == id:
-            movie["title"] = movie.title
-            movie["overview"] = movie.overview
-            movie["year"] = movie.year
-            movie["rating"] = movie.rating
-            movie["category"] = movie.category
-            return movies
+# @app.put("/movies/{id}", tags=["movies"])
+# def update_movie(id: int, movie: Movie):
+#    for movie in movies:
+#        if movie.get("id") == id:
+#            movie["title"] = movie.title
+#            movie["overview"] = movie.overview
+#            movie["year"] = movie.year
+#            movie["rating"] = movie.rating
+#            movie["category"] = movie.category
+#            return movies
 
 
 @app.delete("/movies/{id}", tags=["movies"])
