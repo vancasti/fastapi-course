@@ -1,5 +1,8 @@
 fastapi
+httpx
 pydantic
 pyjwt
 pytest
+sqlalchemy
+sqlmodel
 uvicorn

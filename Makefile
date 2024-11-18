@@ -32,3 +32,6 @@ clean:
 # Lista los contenedores activos
 ps:
 	docker-compose ps
+
+test:
+	docker-compose exec $(SERVICE) pytest app/tests.py
