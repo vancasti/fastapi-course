@@ -1,10 +1,10 @@
-from fastapi import FastAPI, Body, Depends
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from .models import Movie, MovieSchema, UserSchema, BearerJWT, MovieCreate
+from .models import UserSchema
 from .jwt import create_token
-from db.database import Session, engine, Base
-
+from db.database import engine, Base
+from app.routers import movie
 
 app = FastAPI(
     title="fastapi-course",
@@ -12,18 +12,9 @@ app = FastAPI(
     version="1.0.0",
 )
 
-Base.metadata.create_all(bind=engine)
+app.include_router(movie.router)
 
-movies = [
-    {
-        "id": 1,
-        "title": "El Padrino",
-        "overview": "El Padrino talala.....",
-        "year": 1972,
-        "rating": 9.2,
-        "category": "Crimen",
-    }
-]
+Base.metadata.create_all(bind=engine)
 
 
 @app.get("/", tags=["root"])
@@ -35,65 +26,3 @@ def root():
 def login(user: UserSchema):
     token: str = create_token(user.dict())
     return JSONResponse(content=token)
-
-
-@app.get("/movies", tags=["movies"], dependencies=[Depends(BearerJWT())])
-def get_movies():
-    return JSONResponse(content=movies)
-
-
-@app.get("/movies/{id}", tags=["movies"], response_model=MovieSchema)
-def get_movie(id: int):
-    # by interate on list
-    for movie in movies:
-        if movie.get("id") == id:
-            return [movie]
-    # by list comprehesion
-    # newlist = [x for x in fruits if "a" in x]
-    return [movie for movie in movies if movie.get("id") == id]
-
-
-@app.get("/movies/", tags=["movies"])
-def get_movies_by_category(category: str):
-    return [movie for movie in movies if movie.get("category") == category]
-
-
-@app.post("/movies", tags=["movies"], response_model=MovieSchema)
-def create_movie(movie: MovieCreate):
-    db = Session()
-    new_movie = Movie(
-        title=movie.title,
-        overview=movie.overview,
-        year=movie.year,
-        rating=movie.rating,
-        category=movie.category,
-    )
-    db.add(new_movie)
-    db.commit()
-    db.refresh(new_movie)
-    return JSONResponse(
-        status_code=201, content={"message": "Successfully added a new film"}
-    )
-
-
-# @app.put("/movies/{id}", tags=["movies"])
-# def update_movie(id: int, movie: Movie):
-#    for movie in movies:
-#        if movie.get("id") == id:
-#            movie["title"] = movie.title
-#            movie["overview"] = movie.overview
-#            movie["year"] = movie.year
-#            movie["rating"] = movie.rating
-#            movie["category"] = movie.category
-#            return movies
-
-
-@app.delete("/movies/{id}", tags=["movies"])
-def delete_movie(id: int):
-    for item in movies:
-        if item.get("id") == id:
-            movies.remove(item)
-            return JSONResponse(
-                status_code=204,
-                content={"message": "Successfully deleted an existing film"},
-            )

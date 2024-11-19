@@ -1,13 +1,10 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
+from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, Float
 from fastapi.security import HTTPBearer
 from db.database import Base
-from sqlmodel import SQLModel
 
 
-class BearerJWT(HTTPBearer):
-    ...
+class BearerJWT(HTTPBearer): ...
 
 
 class Movie(Base):
@@ -20,14 +17,6 @@ class Movie(Base):
     category = Column(String)
 
 
-class MovieCreate(BaseModel):
-    title: str
-    overview: str
-    year: int
-    rating: float
-    category: str
-
-
 class MovieSchema(BaseModel):
     id: int
     title: str
@@ -37,7 +26,7 @@ class MovieSchema(BaseModel):
     category: str
 
     class Config:
-        orm_mode = True  # Esto permite que Pydantic convierta datos desde objetos de SQLAlchemy.
+        orm_mode = True
 
 
 class UserSchema(BaseModel):

@@ -5,8 +5,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 sqlite_name = "movies.sqlite"
-#base_dir = os.path.dirname(os.path.realpath(__file__))
-database_url = f"sqlite:///{sqlite_name}"
+base_dir = os.path.dirname(os.path.realpath(__file__))
+database_url = f"sqlite:///{os.path.join(base_dir, sqlite_name)}"
 
 engine = create_engine(database_url, echo=True)
 Session = sessionmaker(bind=engine)
